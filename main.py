@@ -1,0 +1,99 @@
+from parameters import *
+from queries import *
+from google.cloud import bigquery
+
+def create_table(table_id, schema, append_data, id_column_name):
+    # Delete table if exists
+    try:
+        client.delete_table(table_id, not_found_ok=True)
+        print(f"Existing table deleted: {table_id}")
+    except Exception as e:
+        print(f"Error deleting table: {e}")
+    
+    # Define and create the table
+    table = bigquery.Table(table_id, schema=schema)
+
+    # Create the table
+    try:
+        table = client.create_table(table)  # Will raise error if table exists
+    except:
+        return
+    print(f"Table created: {table_id}")
+
+    rows_added = 0
+    for item in append_data:
+        errors = client.insert_rows_json(table_id, [item])
+        if errors:
+            print(f"Failed to add row for '{item[id_column_name]}': {errors}")
+        else:
+            rows_added += 1
+            print(f"Added row {rows_added}: {item[id_column_name]}")
+
+    print(f"Total rows added: {rows_added}")
+
+def upload_table(csv_path, schema, table_id):
+
+    job_config = bigquery.LoadJobConfig(
+    write_disposition="WRITE_TRUNCATE",
+    source_format=bigquery.SourceFormat.CSV,
+    skip_leading_rows=1,  # skip header
+    autodetect=True,     # set to True if you want BigQuery to infer schema
+    schema=schema,
+)
+
+    # === Load to BigQuery ===
+    with open(csv_path, "rb") as source_file:
+        job = client.load_table_from_file(source_file, table_id, job_config=job_config)
+
+    job.result()  # Wait for completion
+    print(f"Loaded {job.output_rows} rows to {table_id}")
+
+def run_query_and_create_view(view_id, query):
+    """
+    Create or replace a BigQuery view with the given query.
+
+    Parameters:
+    - view_id: str. Full view path in the format "project_id.dataset_id.view_name"
+    - query: str. SQL query to be used in the view definition
+    """
+    try:
+        view = bigquery.Table(view_id)
+        view.view_query = query
+        view = client.create_table(view, exists_ok=True)  # replaces if exists
+        print(f"View created or updated: {view_id}")
+    except Exception as e:
+        print(f"Failed to create view: {e}")
+
+
+if __name__ == "__main__":
+
+    print("---> Creating drivers_data table to your Bigquery environment.")
+    upload_table(csv_path="data/Drivers_Data.csv",
+                 schema=drivers_data_schema,
+                 table_id=drivers_data_table_id)
+    
+    print("---> Creating rides_data table to your Bigquery environment.")
+    upload_table(csv_path="data/Rides_Data.csv",
+                 schema=rides_data_schema,
+                 table_id=rides_data_table_id)
+
+    print("---> Creating news_content_usa table to your Bigquery environment.")
+    create_table(table_id=news_content_table_id,
+                 schema=news_content_usa_schema,
+                 append_data=usa_articles,
+                 id_column_name="article_name")
+
+    print("---> Creating drivers_metrics view to your Bigquery environment.")
+    dm_query = get_drivers_metrics_query(project_id=project_id,
+                                         dataset_id=marts_dataset_id,
+                                         connection_id=connection_id)
+    run_query_and_create_view(view_id=drivers_metrics_table_id,
+                              query=dm_query)
+    
+    print("---> Creating articles_metrics view to your Bigquery environment.")
+    am_query = get_drivers_metrics_query(project_id=project_id,
+                                         dataset_id=marts_dataset_id,
+                                         connection_id=connection_id)
+    run_query_and_create_view(view_id=articles_metrics_table_id,
+                              query=am_query)
+   
