@@ -3,22 +3,15 @@ from queries import *
 from google.cloud import bigquery
 
 def create_table(table_id, schema, append_data, id_column_name):
-    # Delete table if exists
     try:
-        client.delete_table(table_id, not_found_ok=True)
-        print(f"Existing table deleted: {table_id}")
-    except Exception as e:
-        print(f"Error deleting table: {e}")
-    
-    # Define and create the table
-    table = bigquery.Table(table_id, schema=schema)
-
-    # Create the table
-    try:
-        table = client.create_table(table)  # Will raise error if table exists
-    except:
-        return
-    print(f"Table created: {table_id}")
+        client.get_table(table_id)
+        print(f"Table already exists: {table_id}")
+    except Exception:
+        # Create the table if it doesn't exist
+        print(f"Table not found. Creating table: {table_id}")
+        table = bigquery.Table(table_id, schema=schema)
+        client.create_table(table)
+        print(f"Table created: {table_id}")
 
     rows_added = 0
     for item in append_data:
