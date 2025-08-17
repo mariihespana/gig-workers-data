@@ -8,7 +8,11 @@ title, description, link, published date and summary of a news item.
 from __future__ import annotations
 
 import feedparser
+from dateutil import parser
 from google.cloud import bigquery
+import os
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/mariana/.config/gcloud/application_default_credentials.json"
+
 
 
 def extract_news(feed_url: str) -> list[dict[str, str]]:
@@ -35,7 +39,7 @@ def extract_news(feed_url: str) -> list[dict[str, str]]:
                 "title": entry.title,
                 "description": getattr(entry, "description", ""),
                 "link": entry.link,
-                "published": getattr(entry, "published", ""),
+                "published": parser.parse(getattr(entry, "published", "")).isoformat(),
                 "summary": getattr(entry, "summary", ""),
             }
         )
@@ -50,7 +54,7 @@ def main() -> None:
     )
 
     # Replace with your project, dataset and table path
-    table_id = "your-project.your_dataset.your_table"
+    table_id = "mlops-project-430120.STAGING_DATA.gig_workers_news_brazil"
 
     client = bigquery.Client()
     news_items = extract_news(feed_url)
