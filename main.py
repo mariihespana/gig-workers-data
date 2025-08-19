@@ -2,7 +2,17 @@ from parameters import *
 from queries import *
 from google.cloud import bigquery
 
+
 def create_table(table_id, schema, append_data, id_column_name):
+    """
+    Create a BigQuery table if missing and append data rows.
+
+    Parameters:
+    - table_id: str. Full table path in the format "project.dataset.table".
+    - schema: list[bigquery.SchemaField]. Schema for the table.
+    - append_data: iterable[dict]. Records to insert into the table.
+    - id_column_name: str. Key used to identify each row when logging.
+    """
     try:
         client.get_table(table_id)
         print(f"Table already exists: {table_id}")
@@ -24,15 +34,24 @@ def create_table(table_id, schema, append_data, id_column_name):
 
     print(f"Total rows added: {rows_added}")
 
+
 def upload_table(csv_path, schema, table_id):
+    """
+    Load a CSV file into a BigQuery table, replacing existing data.
+
+    Parameters:
+    - csv_path: str. Local path to the CSV file.
+    - schema: list[bigquery.SchemaField]. Schema for the destination table.
+    - table_id: str. Full table path where the data will be loaded.
+    """
 
     job_config = bigquery.LoadJobConfig(
-    write_disposition="WRITE_TRUNCATE",
-    source_format=bigquery.SourceFormat.CSV,
-    skip_leading_rows=1,  # skip header
-    autodetect=True,     # set to True if you want BigQuery to infer schema
-    schema=schema,
-)
+        write_disposition="WRITE_TRUNCATE",
+        source_format=bigquery.SourceFormat.CSV,
+        skip_leading_rows=1,  # skip header
+        autodetect=True,  # set to True if you want BigQuery to infer schema
+        schema=schema,
+    )
 
     # === Load to BigQuery ===
     with open(csv_path, "rb") as source_file:

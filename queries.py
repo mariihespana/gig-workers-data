@@ -1,5 +1,13 @@
 
 def get_articles_metrics_query(project_id, dataset_id, connection_id):
+    """
+    Generate SQL for evaluating news articles with AI-generated metrics.
+
+    Parameters:
+    - project_id: str. Google Cloud project identifier.
+    - dataset_id: str. BigQuery dataset containing the source table.
+    - connection_id: str. Vertex AI connection used for AI.GENERATE functions.
+    """
     return f'''
 
 SELECT
@@ -57,6 +65,14 @@ WHERE content IS NOT NULL AND content != '';
 '''
 
 def get_drivers_metrics_query(project_id, dataset_id, connection_id):
+    """
+    Construct SQL to compute driver metrics and stress scores using AI.
+
+    Parameters:
+    - project_id: str. Google Cloud project identifier.
+    - dataset_id: str. BigQuery dataset containing driver and ride tables.
+    - connection_id: str. Vertex AI connection used for AI.GENERATE functions.
+    """
     return f"""
 WITH summary_drivers AS (
   SELECT drivers.Driver_ID,
