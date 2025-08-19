@@ -48,6 +48,8 @@ def extract_news(feed_url: str) -> list[dict[str, str]]:
 
 
 def main() -> None:
+    """Download an RSS feed and insert its entries into BigQuery."""
+
     # Replace with the actual URL of the RSS feed you want to parse
     feed_url = (
         "https://news.google.com/rss/search?q=entregadores&hl=pt-BR&gl=BR&ceid=BR:pt-419"
