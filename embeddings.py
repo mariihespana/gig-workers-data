@@ -20,13 +20,16 @@ def generate_driver_reason_embeddings(model_cls=None):
     if df.empty:
         return
 
-    try:
-        model = model_cls.from_pretrained("textembedding-gecko@003")
-    except NotFound:
-        model = model_cls.from_pretrained("textembedding-gecko@002")
-
     unique_reasons = df["stress_reason"].unique().tolist()
-    embeddings = model.get_embeddings(unique_reasons)
+
+    def _get_embeddings(model_name):
+        model = model_cls.from_pretrained(model_name)
+        return model.get_embeddings(unique_reasons)
+
+    try:
+        embeddings = _get_embeddings("textembedding-gecko@003")
+    except NotFound:
+        embeddings = _get_embeddings("textembedding-gecko@002")
     reason_to_embedding = {
         reason: emb.values for reason, emb in zip(unique_reasons, embeddings)
     }
