@@ -1,6 +1,7 @@
 from parameters import *
 from queries import *
 from google.cloud import bigquery
+from embeddings import generate_driver_reason_embeddings
 
 
 def create_table(table_id, schema, append_data, id_column_name):
@@ -108,4 +109,6 @@ if __name__ == "__main__":
                                          connection_id=connection_id)
     run_query_and_create_view(view_id=articles_metrics_table_id,
                               query=am_query)
-   
+
+    print("---> Generating driver_reason_embeddings table.")
+    generate_driver_reason_embeddings()
