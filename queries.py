@@ -74,6 +74,9 @@ def get_drivers_metrics_query(project_id, dataset_id, connection_id):
     - connection_id: str. Vertex AI connection used for AI.GENERATE functions.
     """
     return f"""
+
+-- CREATE OR REPLACE TABLE MARTS_DATA.tbl_drivers_metrics AS 
+
 WITH summary_drivers AS (
   SELECT drivers.Driver_ID,
         drivers.Age,
@@ -138,6 +141,38 @@ A %d-year-old driver from %s with %d years of experience, a %.1f rating, %d ride
          ),
          connection_id => 'projects/{project_id}/locations/us/connections/{connection_id}',
          endpoint => 'gemini-2.0-flash'
-       ).result AS stress_score
+       ).result AS stress_score,
+
+  AI.GENERATE(
+    prompt => FORMAT(\"""
+Given the following metrics, write a short 2-sentence explanation describing this driver's work routine and stress rationale.
+
+Driver Profile:
+- Age: %d
+- City: %s
+- Experience: %d years
+- Average rating: %.1f
+- Active days: %d
+- Total rides: %d
+- Total minutes worked: %d
+- Fare range: $%.2f to $%.2f
+- Fare standard deviation: $%.2f
+
+Your response should mention the workload and variability in earnings, and whether the stress level is likely high or low.
+\""",
+      Age,
+      City,
+      Experience_Years,
+      Average_Rating,
+      active_days,
+      total_rides_all_days,
+      total_duration_min_all_days,
+      min_fare,
+      max_fare,
+      stddev_fare
+    ),
+    connection_id => 'projects/{project_id}/locations/us/connections/{connection_id}',
+    endpoint => 'gemini-2.0-flash'
+  ).result AS stress_reason
 FROM drivers_metrics
 """
