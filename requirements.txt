@@ -1,1 +1,4 @@
 google-cloud-bigquery
+google-cloud-aiplatform
+db_dtypes
+google-api-python-client==2.70.0
