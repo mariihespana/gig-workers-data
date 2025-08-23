@@ -6,25 +6,21 @@ from google.genai.types import EmbedContentConfig
 from embeddings import generate_driver_reason_embeddings
 
 
-def create_table(table_id, schema, append_data, id_column_name):
-    """
-    Create a BigQuery table if missing and append data rows.
-
-    Parameters:
-    - table_id: str. Full table path in the format "project.dataset.table".
-    - schema: list[bigquery.SchemaField]. Schema for the table.
-    - append_data: iterable[dict]. Records to insert into the table.
-    - id_column_name: str. Key used to identify each row when logging.
-    """
+def ensure_table_exists(table_id, schema):
+    """Create the given BigQuery table if it does not already exist."""
     try:
         client.get_table(table_id)
         print(f"Table already exists: {table_id}")
     except Exception:
-        # Create the table if it doesn't exist
         print(f"Table not found. Creating table: {table_id}")
         table = bigquery.Table(table_id, schema=schema)
         client.create_table(table)
         print(f"Table created: {table_id}")
+
+
+def create_table(table_id, schema, append_data, id_column_name):
+    """Create a BigQuery table if missing and append data rows."""
+    ensure_table_exists(table_id, schema)
 
     rows_added = 0
     for item in append_data:
@@ -142,13 +138,17 @@ if __name__ == "__main__":
     reason_to_embedding = dict(zip(unique_reasons, embeddings))
     df["embedding"] = df["stress_reason"].map(reason_to_embedding)
 
+    embedding_schema = [
+        bigquery.SchemaField("Driver_ID", "STRING"),
+        bigquery.SchemaField("stress_reason", "STRING"),
+        bigquery.SchemaField("embedding", "FLOAT64", mode="REPEATED"),
+    ]
+
     job_config = bigquery.LoadJobConfig(
         write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE,
-        schema=[
-            bigquery.SchemaField("Driver_ID", "STRING"),
-            bigquery.SchemaField("stress_reason", "STRING"),
-            bigquery.SchemaField("embedding", "FLOAT64", mode="REPEATED"),
-        ],
+        schema=embedding_schema,
     )
+
     destination = "mlops-project-430120.STAGING_DATA.driver_reason_embeddings"
+    ensure_table_exists(destination, embedding_schema)
     client.load_table_from_dataframe(df, destination, job_config=job_config).result()
