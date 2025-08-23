@@ -49,8 +49,8 @@ rides_data_schema = [
 ]
 
 embedding_schema = [
-    bigquery.SchemaField("Driver_ID", "INT64"),
-    bigquery.SchemaField("stress_reason", "STRING"),
+    bigquery.SchemaField("driver_ID", "INT64"),
+    bigquery.SchemaField("stress_report_tags", "STRING"),
     bigquery.SchemaField("embedding", "FLOAT64", mode="REPEATED"),
 ]
 
