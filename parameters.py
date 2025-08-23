@@ -1,5 +1,6 @@
 import os
 from google.cloud import bigquery
+from google import genai
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/mariana/.config/gcloud/application_default_credentials.json"
 
@@ -14,6 +15,9 @@ articles_metrics_table_id = f"{project_id}.{marts_dataset_id}.articles_metrics"
 drivers_metrics_table_id = f"{project_id}.{marts_dataset_id}.drivers_metrics"
 
 client = bigquery.Client()
+genai_client = genai.Client(
+    vertexai=True, project=project_id, location="us-central1"
+)
 
 news_content_usa_schema = [
     bigquery.SchemaField("article_name", "STRING", mode="REQUIRED"),
@@ -42,6 +46,12 @@ rides_data_schema = [
     bigquery.SchemaField("Fare", "FLOAT", mode="NULLABLE"),
     bigquery.SchemaField("Rating", "FLOAT", mode="NULLABLE"),
     bigquery.SchemaField("Promo_Code", "STRING", mode="NULLABLE"),
+]
+
+embedding_schema = [
+    bigquery.SchemaField("Driver_ID", "INT64"),
+    bigquery.SchemaField("stress_reason", "STRING"),
+    bigquery.SchemaField("embedding", "FLOAT64", mode="REPEATED"),
 ]
 
 usa_articles = [
