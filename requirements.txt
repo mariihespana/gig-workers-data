@@ -3,3 +3,4 @@ google-genai
 pandas
 db_dtypes
 google-api-python-client==2.70.0
+pandas-gbq

@@ -1,30 +1,23 @@
 from parameters import *
 from queries import *
 from google.cloud import bigquery
-from google import genai
 from google.genai.types import EmbedContentConfig
-from embeddings import generate_driver_reason_embeddings
 
-
-def create_table(table_id, schema, append_data, id_column_name):
-    """
-    Create a BigQuery table if missing and append data rows.
-
-    Parameters:
-    - table_id: str. Full table path in the format "project.dataset.table".
-    - schema: list[bigquery.SchemaField]. Schema for the table.
-    - append_data: iterable[dict]. Records to insert into the table.
-    - id_column_name: str. Key used to identify each row when logging.
-    """
+def ensure_table_exists(table_id, schema):
+    """Create the given BigQuery table if it does not already exist."""
     try:
         client.get_table(table_id)
         print(f"Table already exists: {table_id}")
     except Exception:
-        # Create the table if it doesn't exist
         print(f"Table not found. Creating table: {table_id}")
         table = bigquery.Table(table_id, schema=schema)
         client.create_table(table)
         print(f"Table created: {table_id}")
+
+
+def create_table(table_id, schema, append_data, id_column_name):
+    """Create a BigQuery table if missing and append data rows."""
+    ensure_table_exists(table_id, schema)
 
     rows_added = 0
     for item in append_data:
@@ -79,59 +72,17 @@ def run_query_and_create_view(view_id, query):
     except Exception as e:
         print(f"Failed to create view: {e}")
 
-
-if __name__ == "__main__":
-
-    # print("---> Creating drivers_data table to your Bigquery environment.")
-    # upload_table(csv_path="data/Drivers_Data.csv",
-    #              schema=drivers_data_schema,
-    #              table_id=drivers_data_table_id)
-    
-    # print("---> Creating rides_data table to your Bigquery environment.")
-    # upload_table(csv_path="data/Rides_Data.csv",
-    #              schema=rides_data_schema,
-    #              table_id=rides_data_table_id)
-
-    # print("---> Creating news_content_usa table to your Bigquery environment.")
-    # create_table(table_id=news_content_table_id,
-    #              schema=news_content_usa_schema,
-    #              append_data=usa_articles,
-    #              id_column_name="article_name")
-
-    # print("---> Creating drivers_metrics view to your Bigquery environment.")
-    # dm_query = get_drivers_metrics_query(project_id=project_id,
-    #                                      dataset_id=marts_dataset_id,
-    #                                      connection_id=connection_id)
-    # run_query_and_create_view(view_id=drivers_metrics_table_id,
-    #                           query=dm_query)
-    
-    # print("---> Creating articles_metrics view to your Bigquery environment.")
-    # am_query = get_drivers_metrics_query(project_id=project_id,
-    #                                      dataset_id=marts_dataset_id,
-    #                                      connection_id=connection_id)
-    # run_query_and_create_view(view_id=articles_metrics_table_id,
-    #                           query=am_query)
-
-    # print("---> Generating driver_reason_embeddings table.")
-    # generate_driver_reason_embeddings()
-
+def generate_driver_reason_embeddings():
     """Generate embeddings for driver stress reasons and store them in BigQuery."""
-    client = bigquery.Client(project="mlops-project-430120")
     query = (
         """
-        SELECT driver_ID, stress_reason
+        SELECT Driver_ID, stress_reason
         FROM `mlops-project-430120.MARTS_DATA.tbl_drivers_metrics`
         WHERE stress_reason IS NOT NULL
         """
     )
     df = client.query(query).result().to_dataframe()
-    print(len(df))
-    # if df.empty:
-    #     return
 
-    genai_client = genai.Client(
-        vertexai=True, project="mlops-project-430120", location="us-central1"
-    )
     unique_reasons = df["stress_reason"].unique().tolist()
     response = genai_client.models.embed_content(
         model="gemini-embedding-001",
@@ -144,11 +95,45 @@ if __name__ == "__main__":
 
     job_config = bigquery.LoadJobConfig(
         write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE,
-        schema=[
-            bigquery.SchemaField("Driver_ID", "STRING"),
-            bigquery.SchemaField("stress_reason", "STRING"),
-            bigquery.SchemaField("embedding", "FLOAT64", mode="REPEATED"),
-        ],
+        schema=embedding_schema,
     )
-    destination = "mlops-project-430120.STAGING_DATA.driver_reason_embeddings"
-    client.load_table_from_dataframe(df, destination, job_config=job_config).result()
+
+    destination = "mlops-project-430120.MARTS_DATA.driver_reason_embeddings"
+    ensure_table_exists(destination, embedding_schema)
+    # client.load_table_from_dataframe(df, destination, job_config=job_config).result()
+
+
+if __name__ == "__main__":
+
+    print("---> Creating drivers_data table to your Bigquery environment.")
+    upload_table(csv_path="data/Drivers_Data.csv",
+                 schema=drivers_data_schema,
+                 table_id=drivers_data_table_id)
+    
+    print("---> Creating rides_data table to your Bigquery environment.")
+    upload_table(csv_path="data/Rides_Data.csv",
+                 schema=rides_data_schema,
+                 table_id=rides_data_table_id)
+
+    print("---> Creating news_content_usa table to your Bigquery environment.")
+    create_table(table_id=news_content_table_id,
+                 schema=news_content_usa_schema,
+                 append_data=usa_articles,
+                 id_column_name="article_name")
+
+    print("---> Creating drivers_metrics view to your Bigquery environment.")
+    dm_query = get_drivers_metrics_query(project_id=project_id,
+                                         dataset_id=marts_dataset_id,
+                                         connection_id=connection_id)
+    run_query_and_create_view(view_id=drivers_metrics_table_id,
+                              query=dm_query)
+    
+    print("---> Creating articles_metrics view to your Bigquery environment.")
+    am_query = get_drivers_metrics_query(project_id=project_id,
+                                         dataset_id=marts_dataset_id,
+                                         connection_id=connection_id)
+    run_query_and_create_view(view_id=articles_metrics_table_id,
+                              query=am_query)
+
+    print("---> Generating driver_reason_embeddings table.")
+    generate_driver_reason_embeddings()
