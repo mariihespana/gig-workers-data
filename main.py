@@ -100,7 +100,7 @@ def generate_driver_reason_embeddings():
 
     destination = "mlops-project-430120.MARTS_DATA.driver_reason_embeddings"
     ensure_table_exists(destination, embedding_schema)
-    # client.load_table_from_dataframe(df, destination, job_config=job_config).result()
+    client.load_table_from_dataframe(df, destination, job_config=job_config).result()
 
 
 if __name__ == "__main__":
