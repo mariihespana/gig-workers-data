@@ -111,7 +111,6 @@ def generate_driver_reason_embeddings():
 
 def plot_driver_reason_embeddings(table_id):
     """Plot a 2D t-SNE visualization of driver reason embeddings."""
-    print(f"Visualizing driver reason embeddings from {table_id}")
 
     query = f"""
     SELECT
@@ -173,10 +172,6 @@ if __name__ == "__main__":
     # print("---> Generating driver_reason_embeddings table.")
     # generate_driver_reason_embeddings()
 
-    # print("---> Visualizing driver_reason_embeddings table.")
-    # plot_driver_reason_embeddings(
-    #     table_id=f"{project_id}.{marts_dataset_id}.driver_reason_embeddings"
-    # )
-
-    pass
+    print("---> Visualizing driver_reason_embeddings table.")
+    plot_driver_reason_embeddings(table_id=driver_reason_embeddings_table_id)
 

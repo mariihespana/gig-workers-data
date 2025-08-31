@@ -13,6 +13,7 @@ drivers_data_table_id = f"{project_id}.{staging_dataset_id}.drivers_data"
 rides_data_table_id = f"{project_id}.{staging_dataset_id}.rides_data"
 articles_metrics_table_id = f"{project_id}.{marts_dataset_id}.articles_metrics"
 drivers_metrics_table_id = f"{project_id}.{marts_dataset_id}.drivers_metrics"
+driver_reason_embeddings_table_id = f"{project_id}.{marts_dataset_id}.driver_reason_embeddings"
 
 client = bigquery.Client()
 genai_client = genai.Client(
