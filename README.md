@@ -1,9 +1,9 @@
 # Gig Workers Data
 
-## 1. Enable BigQuery Access
+## 1. Enable the Google Cloud SDK
 
-1. In the right sidebar of your Kaggle notebook, go to **"Add-ons" → "Google Cloud"**.
-2. Click **"Enable"** to grant BigQuery access to the notebook.
+1. In the right sidebar of your Kaggle notebook, go to **"Add-ons" → "Google Cloud SDK"**.
+2. Click **"Enable"** to give the notebook access to Google Cloud services such as BigQuery.
 
 ## **2. Include existing project name, dataset names for STAGING DATASET and MARTS DATASET, and `connection_id` from BigQuery**
 
