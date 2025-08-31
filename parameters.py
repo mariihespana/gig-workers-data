@@ -2,20 +2,13 @@ import os
 from google.cloud import bigquery
 from google import genai
 
-import os
-
-GOOGLE_APPLICATION_CREDENTIALS = os.environ("GOOGLE_APPLICATION_CREDENTIALS")
-if GOOGLE_APPLICATION_CREDENTIALS:
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = GOOGLE_APPLICATION_CREDENTIALS
-else:
-    # local path fallback
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/mariana/.config/gcloud/application_default_credentials.json"
+# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/mariana/.config/gcloud/application_default_credentials.json"
 
 os.environ['project_id'] = "mlops-project-430120" 
 os.environ['staging_dataset_id'] = "STAGING_DATA"
 os.environ['marts_dataset_id'] = "MARTS_DATA"
 os.environ['connection_id'] = 'my-connection'
-os.environ['genai_api_key'] = 'AIzaSyDKjCpSS-HIHxa6KVMSr80o9YHxXz5AUHg'
+os.environ['genai_api_key'] = ''
 project_id = os.environ['project_id']
 staging_dataset_id = os.environ['staging_dataset_id']
 marts_dataset_id = os.environ['marts_dataset_id']
