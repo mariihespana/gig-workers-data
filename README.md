@@ -1,18 +1,9 @@
 # Gig Workers Data
 
-## **1. Include your GOOGLE_APPLICATION_CREDENTIALS file path to the environment variable**
+### **1. Enable BigQuery Access
 
-Where: `parameters.py` (row 4)
-
-```python
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/mariana/.config/gcloud/application_default_credentials.json"
-```
-
-If you don't have it yet, run the following command in your terminal:
-
-```bash
-gcloud auth application-default login
-```
+1. In the right sidebar of your Kaggle notebook, go to **"Add-ons" → "Google Cloud"**.
+2. Click **"Enable"** to grant BigQuery access to the notebook.
 
 ## **2. Include existing project name, dataset names for STAGING DATASET and MARTS DATASET, and `connection_id` from BigQuery**
 
