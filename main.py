@@ -78,15 +78,21 @@ def run_query_and_create_view(view_id, query):
     except Exception as e:
         print(f"Failed to create view: {e}")
 
+def create_driver_reason_tags_view():
+    """Create view that generates stress reason tags for drivers."""
+    drt_query = get_driver_reason_tags_query(project_id=project_id,
+                                             dataset_id=marts_dataset_id,
+                                             connection_id=connection_id)
+    run_query_and_create_view(view_id=drivers_reason_tags_table_id,
+                              query=drt_query)
+
 def generate_driver_reason_embeddings():
     """Generate embeddings for driver stress reasons and store them in BigQuery."""
-    query = (
-        """
+    query = f"""
         SELECT driver_ID, stress_report_tags
-        FROM `mlops-project-430120.MARTS_DATA.drivers_reason_tags`
+        FROM `{drivers_reason_tags_table_id}`
         WHERE stress_report_tags IS NOT NULL
         """
-    )
     df = client.query(query).result().to_dataframe()
 
     unique_reasons = df["stress_report_tags"].unique().tolist()
@@ -149,11 +155,11 @@ if __name__ == "__main__":
                  schema=rides_data_schema,
                  table_id=rides_data_table_id)
 
-    print("---> Creating news_content_usa table to your Bigquery environment.")
-    create_table(table_id=news_content_table_id,
-                 schema=news_content_usa_schema,
-                 append_data=usa_articles,
-                 id_column_name="article_name")
+    # print("---> Creating news_content_usa table to your Bigquery environment.")
+    # create_table(table_id=news_content_table_id,
+    #              schema=news_content_usa_schema,
+    #              append_data=usa_articles,
+    #              id_column_name="article_name")
 
     print("---> Creating drivers_metrics view to your Bigquery environment.")
     dm_query = get_drivers_metrics_query(project_id=project_id,
@@ -162,12 +168,15 @@ if __name__ == "__main__":
     run_query_and_create_view(view_id=drivers_metrics_table_id,
                               query=dm_query)
     
-    print("---> Creating articles_metrics view to your Bigquery environment.")
-    am_query = get_drivers_metrics_query(project_id=project_id,
-                                         dataset_id=marts_dataset_id,
-                                         connection_id=connection_id)
-    run_query_and_create_view(view_id=articles_metrics_table_id,
-                              query=am_query)
+    # print("---> Creating articles_metrics view to your Bigquery environment.")
+    # am_query = get_drivers_metrics_query(project_id=project_id,
+    #                                      dataset_id=marts_dataset_id,
+    #                                      connection_id=connection_id)
+    # run_query_and_create_view(view_id=articles_metrics_table_id,
+    #                           query=am_query)
+
+    print("---> Creating drivers_reason_tags view to your Bigquery environment.")
+    create_driver_reason_tags_view()
 
     print("---> Generating driver_reason_embeddings table.")
     generate_driver_reason_embeddings()
