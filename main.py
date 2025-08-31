@@ -140,6 +140,7 @@ def plot_driver_reason_embeddings(table_id):
     plt.figure(figsize=(10, 8))
     sns.scatterplot(data=viz_df, x="x", y="y", hue="main_tag", palette="tab10")
     plt.title("Driver Embeddings Colored by First Tag")
+    plt.savefig("driver_embeddings.png")
     plt.show()
 
 
