@@ -4,10 +4,15 @@ from google import genai
 
 # os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/mariana/.config/gcloud/application_default_credentials.json"
 
-project_id = "mlops-project-430120" 
-staging_dataset_id = "STAGING_DATA"
-marts_dataset_id = "MARTS_DATA"
-connection_id = 'my-connection'
+# os.environ['project_id'] = "mlops-project-430120" 
+# os.environ['staging_dataset_id'] = "STAGING_DATA"
+# os.environ['marts_dataset_id'] = "MARTS_DATA"
+# os.environ['connection_id'] = 'my-connection'
+project_id = os.environ['project_id']
+staging_dataset_id = os.environ['staging_dataset_id']
+marts_dataset_id = os.environ['marts_dataset_id']
+connection_id = os.environ['connection_id']
+
 news_content_table_id = f"{project_id}.{staging_dataset_id}.news_content_usa"
 drivers_data_table_id = f"{project_id}.{staging_dataset_id}.drivers_data"
 rides_data_table_id = f"{project_id}.{staging_dataset_id}.rides_data"
@@ -16,11 +21,11 @@ drivers_metrics_table_id = f"{project_id}.{marts_dataset_id}.drivers_metrics"
 drivers_reason_tags_table_id = f"{project_id}.{marts_dataset_id}.drivers_reason_tags"
 driver_reason_embeddings_table_id = f"{project_id}.{marts_dataset_id}.driver_reason_embeddings"
 
-client = bigquery.Client(project=project_id)
-genai_api_key=None
-genai_client = genai.Client(api_key=genai_api_key,
-    vertexai=True, project=project_id, location="us-central1"
-) 
+# client = bigquery.Client(project=project_id)
+# genai_api_key=None
+# genai_client = genai.Client(api_key=genai_api_key,
+#     vertexai=True, project=project_id, location="us-central1"
+# ) 
 
 news_content_usa_schema = [
     bigquery.SchemaField("article_name", "STRING", mode="REQUIRED"),
