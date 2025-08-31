@@ -8,6 +8,7 @@ from google import genai
 # os.environ['staging_dataset_id'] = "STAGING_DATA"
 # os.environ['marts_dataset_id'] = "MARTS_DATA"
 # os.environ['connection_id'] = 'my-connection'
+# os.environ['genai_api_key'] = None
 project_id = os.environ['project_id']
 staging_dataset_id = os.environ['staging_dataset_id']
 marts_dataset_id = os.environ['marts_dataset_id']
@@ -21,11 +22,11 @@ drivers_metrics_table_id = f"{project_id}.{marts_dataset_id}.drivers_metrics"
 drivers_reason_tags_table_id = f"{project_id}.{marts_dataset_id}.drivers_reason_tags"
 driver_reason_embeddings_table_id = f"{project_id}.{marts_dataset_id}.driver_reason_embeddings"
 
-# client = bigquery.Client(project=project_id)
-# genai_api_key=None
-# genai_client = genai.Client(api_key=genai_api_key,
-#     vertexai=True, project=project_id, location="us-central1"
-# ) 
+client = bigquery.Client(project=project_id)
+genai_api_key = os.environ['genai_api_key']
+genai_client = genai.Client(api_key=genai_api_key,
+    vertexai=True, project=project_id, location="us-central1"
+) 
 
 news_content_usa_schema = [
     bigquery.SchemaField("article_name", "STRING", mode="REQUIRED"),
