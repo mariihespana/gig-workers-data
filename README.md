@@ -30,10 +30,18 @@ connection_id = 'my-connection'
 ```bash
 pip3 install -r requirements.txt
 ```
+or 
+```bash
+pip install -r requirements.txt
+```
 
 ## **4. Run `main.py`**
 
 ```bash
 python main.py
+```
+or
+```bash
+python3 main.py
 ```
 
