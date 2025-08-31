@@ -1,0 +1,15 @@
+Please tell us how many months of experience with BigQuery AI each team member has.
+
+3
+
+Note: Active experience is of 3 months, but I have used it years ago.
+
+Please tell us how many months of experience with Google Cloud each team member has.
+
+60
+
+We’d love to hear from you and your experience in working with the technology during this hackathon, positive or negative. Please provide any feedback on your experience with BigQuery AI.
+
+I think is amazing the possibilities of data handling that BigQuery enables us to do today and is even more amazing with the AI capabilities. My experience was well to either understand and apply the AI functions to my data.
+I've made one personal feedback note: I have missed a GENERATE_EMDEDDING function to use built in genai models. I tried to use ML.GENERATE_EMDEDDING but I couldn't because I don't have any models in my environment. I wanted to use one from genai, so I used in python instead. Maybe I have missed something, but I was hoping to be able to use the builtin embedding model from genai directly on SQL, without the need of using python.
+

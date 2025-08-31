@@ -135,5 +135,47 @@ if __name__ == "__main__":
     # run_query_and_create_view(view_id=articles_metrics_table_id,
     #                           query=am_query)
 
-    print("---> Generating driver_reason_embeddings table.")
-    generate_driver_reason_embeddings()
+    # print("---> Generating driver_reason_embeddings table.")
+    # generate_driver_reason_embeddings()
+
+    from google.cloud import bigquery
+    import pandas as pd
+    from sklearn.manifold import TSNE
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    import ast
+
+    # ---- CONFIG ----
+    PROJECT_ID = "mlops-project-430120"
+    TABLE_ID = "mlops-project-430120.MARTS_DATA.driver_reason_embeddings"
+    client = bigquery.Client(project=PROJECT_ID)
+
+    # ---- STEP 1: Load data from BigQuery ----
+    query = f"""
+    SELECT 
+    driver_ID,
+    stress_report_tags,
+    embedding
+    FROM `{TABLE_ID}`
+    WHERE embedding IS NOT NULL AND stress_report_tags IS NOT NULL
+    """
+    df = client.query(query).to_dataframe()
+    print(f"Loaded {len(df)} rows from driver_reason_embeddings")
+
+    df["main_tag"] = df["stress_report_tags"].str.split(",").str[0].str.strip()
+
+    import numpy as np
+    # Reduce dimensions
+    X = np.array(df["embedding"].tolist())  # ← FIX: convert to numpy array
+    X_embedded = TSNE(n_components=2, perplexity=30, random_state=42).fit_transform(X)
+
+    # Build plot dataframe
+    viz_df = pd.DataFrame(X_embedded, columns=["x", "y"])
+    viz_df["main_tag"] = df["main_tag"]
+
+    # Plot
+    plt.figure(figsize=(10, 8))
+    sns.scatterplot(data=viz_df, x="x", y="y", hue="main_tag", palette="tab10")
+    plt.title("Driver Embeddings Colored by First Tag")
+    plt.show()
+
