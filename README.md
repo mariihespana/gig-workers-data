@@ -16,7 +16,13 @@ marts_dataset_id = "MARTS_DATA"
 connection_id = 'my-connection'
 ```
 
-## **3. Run `requirements.txt`**
+## **3. Replace `genai_api_key` with your Google Gemini API key**
+
+Where: `parameters.py` (row 20)
+
+Get an API key from [Google AI Studio](https://aistudio.google.com/app/apikey) and assign it to `genai_api_key` in `parameters.py`.
+
+## **4. Run `requirements.txt`**
 
 ```bash
 pip3 install -r requirements.txt
@@ -26,7 +32,7 @@ or
 pip install -r requirements.txt
 ```
 
-## **4. Run `main.py`**
+## **5. Run `main.py`**
 
 ```bash
 python main.py
