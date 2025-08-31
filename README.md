@@ -1,6 +1,6 @@
 # Gig Workers Data
 
-## **1. Enable BigQuery Access
+## 1. Enable BigQuery Access
 
 1. In the right sidebar of your Kaggle notebook, go to **"Add-ons" → "Google Cloud"**.
 2. Click **"Enable"** to grant BigQuery access to the notebook.
