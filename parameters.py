@@ -2,13 +2,20 @@ import os
 from google.cloud import bigquery
 from google import genai
 
-# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/mariana/.config/gcloud/application_default_credentials.json"
+import os
 
-# os.environ['project_id'] = "mlops-project-430120" 
-# os.environ['staging_dataset_id'] = "STAGING_DATA"
-# os.environ['marts_dataset_id'] = "MARTS_DATA"
-# os.environ['connection_id'] = 'my-connection'
-# os.environ['genai_api_key'] = None
+GOOGLE_APPLICATION_CREDENTIALS = os.environ("GOOGLE_APPLICATION_CREDENTIALS")
+if GOOGLE_APPLICATION_CREDENTIALS:
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = GOOGLE_APPLICATION_CREDENTIALS
+else:
+    # local path fallback
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/mariana/.config/gcloud/application_default_credentials.json"
+
+os.environ['project_id'] = "mlops-project-430120" 
+os.environ['staging_dataset_id'] = "STAGING_DATA"
+os.environ['marts_dataset_id'] = "MARTS_DATA"
+os.environ['connection_id'] = 'my-connection'
+os.environ['genai_api_key'] = 'AIzaSyDKjCpSS-HIHxa6KVMSr80o9YHxXz5AUHg'
 project_id = os.environ['project_id']
 staging_dataset_id = os.environ['staging_dataset_id']
 marts_dataset_id = os.environ['marts_dataset_id']
@@ -25,8 +32,7 @@ driver_reason_embeddings_table_id = f"{project_id}.{marts_dataset_id}.driver_rea
 client = bigquery.Client(project=project_id)
 genai_api_key = os.environ['genai_api_key']
 if genai_api_key:
-  genai_client = genai.Client(api_key=genai_api_key,
-                              vertexai=True)
+  genai_client = genai.Client(api_key=genai_api_key)
 else:
   genai_client = genai.Client(vertexai=True, 
                               project=project_id, 
