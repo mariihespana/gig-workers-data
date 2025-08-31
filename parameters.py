@@ -2,7 +2,7 @@ import os
 from google.cloud import bigquery
 from google import genai
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/mariana/.config/gcloud/application_default_credentials.json"
+# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/mariana/.config/gcloud/application_default_credentials.json"
 
 project_id = "mlops-project-430120" 
 staging_dataset_id = "STAGING_DATA"
