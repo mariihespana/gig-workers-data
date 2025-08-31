@@ -176,3 +176,26 @@ Your response should mention the workload and variability in earnings, and wheth
   ).result AS stress_reason
 FROM drivers_metrics
 """
+
+
+def get_driver_reason_tags_query(project_id, dataset_id, connection_id):
+    """Generate SQL to tag driver stress reasons with keywords."""
+    return f"""
+SELECT driver_ID,
+  AI.GENERATE(
+    prompt => FORMAT(\"""
+Given the stress reason described by the driver, return 2 to 3 keywords that reflect the health state of the driver.
+Return like example below on a limit of 2 words by keyword.
+
+Keyword1, Keyword2, Keyword3
+
+Please see the stress text below:
+%s
+\""",
+      stress_reason
+    ),
+    connection_id => 'projects/{project_id}/locations/us/connections/{connection_id}',
+    endpoint => 'gemini-2.0-flash'
+  ).result AS stress_report_tags
+FROM `{project_id}.{dataset_id}.drivers_metrics`
+"""
