@@ -1,5 +1,11 @@
 # Gig Workers Data
 
+This is a Data Generator Tool to analyze driver stress levels based on drivers' operational metrics. We are using simulated data from Gig Workers (drivers) to build this experiment. Gig work is highly flexible, but platform policies, ML-driven management, low payments, blocked accounts, and long idle times can strongly affect drivers’ mental well-being.
+
+Here is the public Kaggle notebook link: https://www.kaggle.com/code/mariihespana/gig-workers-stress-levels
+
+To run the analysis on Kaggle, please see the instructions below:
+
 ## 1. Enable the Google Cloud SDK
 
 1. In the right sidebar of your Kaggle notebook, go to **"Add-ons" → "Google Cloud SDK"**.
