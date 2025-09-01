@@ -1,6 +1,5 @@
 import os
 from google.cloud import bigquery
-from google import genai
 
 # os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/mariana/.config/gcloud/application_default_credentials.json"
 
@@ -8,7 +7,6 @@ os.environ['project_id'] = "mlops-project-430120"
 os.environ['staging_dataset_id'] = "STAGING_DATA"
 os.environ['marts_dataset_id'] = "MARTS_DATA"
 os.environ['connection_id'] = 'my-connection'
-os.environ['genai_api_key'] = ''
 project_id = os.environ['project_id']
 staging_dataset_id = os.environ['staging_dataset_id']
 marts_dataset_id = os.environ['marts_dataset_id']
@@ -23,9 +21,6 @@ drivers_reason_tags_table_id = f"{project_id}.{marts_dataset_id}.drivers_reason_
 driver_reason_embeddings_table_id = f"{project_id}.{marts_dataset_id}.driver_reason_embeddings"
 
 client = bigquery.Client(project=project_id)
-genai_client = genai.Client(vertexai=True, 
-                            project=project_id, 
-                            location="us-central1") 
 
 news_content_usa_schema = [
     bigquery.SchemaField("article_name", "STRING", mode="REQUIRED"),

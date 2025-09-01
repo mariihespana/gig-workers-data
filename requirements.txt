@@ -1,6 +1,6 @@
 google-cloud-bigquery
 google-cloud-bigquery-storage
-google-genai
+bigframes
 pandas
 db_dtypes
 google-api-python-client==2.70.0

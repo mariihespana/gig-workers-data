@@ -1,7 +1,7 @@
 from parameters import *
 from queries import *
 from google.cloud import bigquery
-from google.genai.types import EmbedContentConfig
+from bigframes.ml.llm import TextEmbeddingGenerator
 
 import pandas as pd
 import numpy as np
@@ -96,13 +96,9 @@ def generate_driver_reason_embeddings():
     df = client.query(query).result().to_dataframe()
 
     unique_reasons = df["stress_report_tags"].unique().tolist()
-    response = genai_client.models.embed_content(
-        model="gemini-embedding-001",
-        contents=unique_reasons,
-        config=EmbedContentConfig(task_type="RETRIEVAL_DOCUMENT"),
-    )
-    embeddings = [emb.values for emb in response.embeddings]
-    reason_to_embedding = dict(zip(unique_reasons, embeddings))
+    generator = TextEmbeddingGenerator(model_name="text-embedding-005")
+    embeddings = generator.predict(unique_reasons)
+    reason_to_embedding = dict(zip(unique_reasons, embeddings['ml_generate']))
     df["embedding"] = df["stress_report_tags"].map(reason_to_embedding)
 
     job_config = bigquery.LoadJobConfig(
