@@ -96,9 +96,9 @@ def generate_driver_reason_embeddings():
     df = client.query(query).result().to_dataframe()
 
     unique_reasons = df["stress_report_tags"].unique().tolist()
-    generator = TextEmbeddingGenerator(model="textembedding-gecko@001")
-    embeddings = generator.generate(unique_reasons)
-    reason_to_embedding = dict(zip(unique_reasons, embeddings))
+    generator = TextEmbeddingGenerator(model_name="text-embedding-005")
+    embeddings = generator.predict(unique_reasons)
+    reason_to_embedding = dict(zip(unique_reasons, embeddings['ml_generate']))
     df["embedding"] = df["stress_report_tags"].map(reason_to_embedding)
 
     job_config = bigquery.LoadJobConfig(
